@@ -70,7 +70,7 @@ ISR(PCINT1_vect, ISR_NOBLOCK){
             }
             break;
         case startGame_F:
-            while(ledMask != PINC);
+            while((ledMask && 0b00011110)>>1 != ((!PORTC) && 0b00001111));
             ledMask = 0;
             currentScore++;
             game();
@@ -115,13 +115,12 @@ int main(int argc, char** argv) {
     
     TCCR0B |= (1<<CS00); //Used for random number generation seeding
     TCCR1B |= (1<<WGM12);//Timer1 on CTC mode
-    OCR1A = 3905; //1s window for input during game
+    OCR1A = 7812; //2s window for input during game
     
     uint16_t highScore = readHighScore(); //Stores EEPROM in SRAM
     
-    //Pull-ups for buttons
-    PORTC |= (1<<BUTTON_GREEN) | (1<<BUTTON_YELLOW) | (1<<BUTTON_BLUE)
-            | (1<<BUTTON_RED) | (1<<BUTTON_START);
+    //Pull-ups for all
+    PORTC = 0xFF;
     
     //Set LED pins & Buzzer Pin as outputs (Initialize as off)
     PORTB &= !(1<<LED_RED) & !(1<<LED_BLUE) & !(1<<LED_YELLOW)
@@ -130,7 +129,7 @@ int main(int argc, char** argv) {
             | (1<<LED_YELLOW) | (1<<LED_GREEN) | (1<<LED_START);
     
     //Interrupt from buttons:
-    PCICR |= (1<<PCIE1);
+
     
     lcd_init();
     

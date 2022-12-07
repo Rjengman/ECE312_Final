@@ -222,6 +222,7 @@ void startGame(){
     sei();
     TCCR1B |= (1<<CS12); //Timer1 attached, prescale by 256
     TIMSK1 |= (1<<OCIE1A); //Enable interrupting off timer
+    srandom(TCNT0);
     flags = game_F;
 }
 
@@ -243,10 +244,10 @@ void game(){
     }
     else{difficulty = 1;}
     
+    
     for(uint8_t i = 0; i<difficulty; i++)
     {
-        srand(TCNT0);
-        randInt = rand();
+        randInt = random();
         switch (randInt%4){
             case 0:
                 ledMask |= (1<<LED_RED);
